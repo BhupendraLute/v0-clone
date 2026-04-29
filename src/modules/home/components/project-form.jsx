@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
 
 import { PROJECT_TEMPLATES } from "@/constants";
+import { onInvoke } from "../actions";
 
 const formSchema = z.object({
 	content: z
@@ -53,6 +54,7 @@ const ProjectForm = () => {
 	return (
 		<div className="space-y-8">
 			{/* Templates Grid */}
+			<Button onClick={onInvoke}> Invoke Agent </Button>
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
 				{PROJECT_TEMPLATES.map((template, index) => (
 					<button
