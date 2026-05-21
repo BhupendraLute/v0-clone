@@ -114,7 +114,7 @@ export const codeAgentFunction = inngest.createFunction(
                 })
             ],
             lifecycle: {
-                onResponse: async ({ response, network }) => {
+                onResponse: async ({ result, network }) => {
                     const lastAssistantMessageText = lastAssistantTextMessageContent(result)
 
                     if (lastAssistantMessageText && network) {
