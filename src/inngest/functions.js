@@ -4,6 +4,8 @@ import { gemini, createAgent, createTool, createNetwork } from "@inngest/agent-k
 import { z } from "zod";
 import { PROMPT } from "@/prompt";
 import { lastAssistantTextMessageContent } from "./utils";
+import { MessageRole, MessageType } from "@/generated/prisma/client"
+import db from "@/lib/db";
 
 export const codeAgentFunction = inngest.createFunction(
     { id: "code-agent", triggers: { event: "code-agent/run" } },
@@ -149,6 +151,35 @@ export const codeAgentFunction = inngest.createFunction(
             const host = sandbox.getHost(3000);
 
             return `http://${host}`
+        })
+
+        await step.run("save-result", async () => {
+            if (isError) {
+                return await db.message.create({
+                    data: {
+                        projectId: event.data.projectId,
+                        content: "Sorry something went wrong please try again",
+                        type: MessageType.ERROR,
+                        role: MessageRole.ASSISTANT,
+                    }
+                })
+            }
+            return await db.message.create({
+                data: {
+                    projectId: event.data.projectId,
+                    content: event.state.data.summary,
+                    type: MessageType.RESULT,
+                    role: MessageRole.ASSISTANT,
+                    fragments: {
+                        create: {
+                            sandboxUrl: sandboxUrl,
+                            title: "Untitled",
+                            files: result.state.data.files,
+                            summary: result.state.data.summary,
+                        }
+                    }
+                }
+            })
         })
 
         return {
