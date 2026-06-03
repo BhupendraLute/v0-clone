@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import TextAreaAutosize from "react-textarea-autosize";
 import { ArrowUpIcon, Loader2Icon } from "lucide-react";
@@ -39,6 +39,11 @@ const ProjectForm = () => {
 		mode: "onChange",
 	});
 
+	const content = useWatch({
+		control: form.control,
+		name: "content",
+	});
+
 	const handleTemplate = (prompt) => {
 		form.setValue("content", prompt);
 	};
@@ -54,7 +59,7 @@ const ProjectForm = () => {
 		}
 	};
 
-	const isButtonDisabled = isPending || !form.watch("content").trim;
+	const isButtonDisabled = isPending || !(content || "").trim();
 
 	return (
 		<div className="space-y-8">
