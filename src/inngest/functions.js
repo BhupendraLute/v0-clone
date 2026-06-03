@@ -21,7 +21,7 @@ export const codeAgentFunction = inngest.createFunction(
             name: "code-agent",
             description: "An expert code agent that can write code to solve problems",
             system: PROMPT,
-            model: gemini({ model: "gemini-2.5-flash" }),
+            model: gemini({ model: "gemini-2.5-flash-lite" }),
             tools: [
                 // 1. Terminal
                 createTool({
@@ -167,7 +167,7 @@ export const codeAgentFunction = inngest.createFunction(
             return await db.message.create({
                 data: {
                     projectId: event.data.projectId,
-                    content: event.state.data.summary,
+                    content: result.state.data.summary,
                     type: MessageType.RESULT,
                     role: MessageRole.ASSISTANT,
                     fragments: {
@@ -175,7 +175,6 @@ export const codeAgentFunction = inngest.createFunction(
                             sandboxUrl: sandboxUrl,
                             title: "Untitled",
                             files: result.state.data.files,
-                            summary: result.state.data.summary,
                         }
                     }
                 }
