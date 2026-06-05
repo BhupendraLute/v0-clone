@@ -8,7 +8,21 @@ import { MessageRole, MessageType } from "@/generated/prisma/client"
 import db from "@/lib/db";
 
 export const codeAgentFunction = inngest.createFunction(
-    { id: "code-agent", triggers: { event: "code-agent/run" } },
+    { 
+        id: "code-agent", 
+        retries: 0,
+        triggers: { event: "code-agent/run" },
+        onFailure: async ({ event, error }) => {
+            await db.message.create({
+                data: {
+                    projectId: event.data.event.data.projectId,
+                    content: `Sorry something went wrong: ${error.message || "Unknown error"}`,
+                    type: MessageType.ERROR,
+                    role: MessageRole.ASSISTANT,
+                }
+            });
+        }
+    },
     async ({ event, step }) => {
         // step-1: create a sandbox and get the sandbox id
         const sandboxId = await step.run("get-sandbbox-id", async () => {
@@ -52,9 +66,9 @@ export const codeAgentFunction = inngest.createFunction(
                     }
                 }),
 
-                // 2. CreateOrUpdateFiles
+                // 2. writeFiles
                 createTool({
-                    name: "createOrUpdateFiles",
+                    name: "writeFiles",
                     description: "Create or update a file in the sandbox",
                     parameters: z.object({
                         files: z.array(
@@ -65,7 +79,7 @@ export const codeAgentFunction = inngest.createFunction(
                         )
                     }),
                     handler: async ({ files }, { step, network }) => {
-                        const newFiles = await step?.run("createOrUpdateFiles", async () => {
+                        const newFiles = await step?.run("writeFiles", async () => {
                             try {
                                 const updatedFIles = network?.state?.data.files || {}
 

@@ -3,7 +3,7 @@ import {
 	prefetchMessage,
 } from "@/modules/messages/hooks/message";
 import { useEffect, useRef } from "react";
-import { MessageRole } from "@/generated/prisma/client";
+import { MessageRole, MessageType } from "@/generated/prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "@/components/ui/spinner";
 import MessageCard from "./message-card";
@@ -83,6 +83,7 @@ const MessageContainer = ({ projectId, activeFragment, setActiveFragment }) => {
 
 	const lastMessage = messages[messages.length - 1];
 	const isLastMessageUser = lastMessage.role === MessageRole.USER;
+	const isStuck = isLastMessageUser && (new Date() - new Date(lastMessage.createdAt)) > 3 * 60 * 1000;
 
 	return (
 		<div className="flex flex-col flex-1 min-h-0">
@@ -103,7 +104,15 @@ const MessageContainer = ({ projectId, activeFragment, setActiveFragment }) => {
 						type={message.type}
 					/>
 				))}
-				{isLastMessageUser && <MessageLoading />}
+				{isLastMessageUser && !isStuck && <MessageLoading />}
+				{isStuck && (
+					<MessageCard
+						content="The agent stopped responding or the run timed out. Please try sending a new message."
+						role={MessageRole.ASSISTANT}
+						type={MessageType.ERROR}
+						createdAt={new Date()}
+					/>
+				)}
 				<div ref={bottomRef} />
 			</div>
 			<div className="relative p-3 pt-1">
