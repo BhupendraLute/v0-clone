@@ -169,7 +169,7 @@ export const codeAgentFunction = inngest.createFunction(
             if (Array.isArray(fragmentTitleOutput[0].content)) {
                 return fragmentTitleOutput[0].content.map((c) => c).join(" ")
             } else {
-                fragmentTitleOutput[0].content;
+                return fragmentTitleOutput[0].content;
             }
         }
 
@@ -180,6 +180,8 @@ export const codeAgentFunction = inngest.createFunction(
 
             if (Array.isArray(responseOutput[0].content)) {
                 return responseOutput[0].content.map((c) => c).join(" ")
+            } else {
+                return responseOutput[0].content || "Here you go";
             }
         }
 
@@ -206,7 +208,7 @@ export const codeAgentFunction = inngest.createFunction(
             return await db.message.create({
                 data: {
                     projectId: event.data.projectId,
-                    content: "yehi problem hai",
+                    content: generateResponse(),
                     type: MessageType.RESULT,
                     role: MessageRole.ASSISTANT,
                     fragments: {
