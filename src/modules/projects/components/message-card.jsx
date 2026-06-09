@@ -5,6 +5,7 @@ import React from "react";
 
 import { format } from "date-fns";
 import { ChevronRightIcon, Code2Icon } from "lucide-react";
+import { Message } from "@/components/ai-elements/message";
 
 const FragmentCard = ({ fragment, isActiveFragment, onFragmentClick }) => {
 	return (
@@ -68,7 +69,7 @@ const AssistantMessage = ({
 				</span>
 			</div>
 			<div className="pl-8.5 flex flex-col gap-y-4">
-				<span>{content}</span>
+				<Message from={"Assistent"}>{content}</Message>
 				{fragment && type === MessageType.RESULT && (
 					<FragmentCard
 						fragment={fragment}
