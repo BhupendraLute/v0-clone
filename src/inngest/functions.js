@@ -32,11 +32,12 @@ export const codeAgentFunction = inngest.createFunction(
                 for (const message of messages) {
                     formattedMessages.push({
                         type: "text",
-                        role: message.role === "ASSISTANT" ? "assistance" : "user",
+                        role: message.role === "ASSISTANT" ? "assistant" : "user",
                         content: message.content
                     })
                 }
 
+                return formattedMessages;
             }
         )
 
@@ -65,7 +66,7 @@ export const codeAgentFunction = inngest.createFunction(
                         command: z.string()
                     }),
                     handler: async ({ command }, { step }) => {
-                        return await step?.run("terminal"), async () => {
+                        return await step?.run("terminal", async () => {
                             const buffers = { stdout: "", stderr: "" }
 
                             try {
@@ -78,11 +79,12 @@ export const codeAgentFunction = inngest.createFunction(
                                         buffers.stderr += data;
                                     }
                                 })
+                                return `stdout:\n${buffers.stdout}\nstderr:\n${buffers.stderr}`;
                             } catch (error) {
                                 console.log(`Command failed: ${error} \n stdout: ${buffers.stdout} \n stderr: ${buffers.stderr}`);
                                 return `Command failed: ${error} \n stdout: ${buffers.stdout} \n stderr: ${buffers.stderr}`
                             }
-                        }
+                        })
                     }
                 }),
 
