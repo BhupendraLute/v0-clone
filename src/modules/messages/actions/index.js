@@ -24,15 +24,9 @@ export const createMessage = async (value, projectId) => {
         await consumeCredits()
     } catch (error) {
         if (error instanceof Error) {
-            throw new Error({
-                code: "BAD_REQUEST",
-                message: "Something went wrong"
-            })
+            throw new Error(error.message || "Something went wrong")
         } else {
-            throw new Error({
-                code: "TOO_MANY_REQUESTS",
-                message: "Too many requests"
-            })
+            throw new Error("Too many requests")
         }
     }
 

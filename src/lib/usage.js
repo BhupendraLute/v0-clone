@@ -15,7 +15,7 @@ export async function getUsageTracker() {
 
   const usageTracker = new RateLimiterPrisma({
     storeClient: db,
-    tableName: "Usage",
+    tableName: "usage",
     points: hasProAccess ? PRO_POINTS : FREE_POINTS,
     duration: DURATION
   });
